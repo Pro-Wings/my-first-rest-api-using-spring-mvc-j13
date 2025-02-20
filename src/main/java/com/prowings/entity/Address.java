@@ -11,11 +11,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Student {
+public class Address {
 	
-	private int id;	
-	private String name;
-	private String email;
-	private String phone;
-	private Address address;
+	private String city;
+	private String state;
+	private String country;
+	private String pin;
+
 }
