@@ -1,14 +1,27 @@
 package com.prowings.controller;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.prowings.entity.Employee;
+import com.prowings.entity.Error1;
+import com.prowings.entity.Error2;
+import com.prowings.entity.ErrorResponse;
 import com.prowings.service.EmployeeCrudService;
 
 @RestController
@@ -19,25 +32,57 @@ public class EmployeeCrudController {
 	private EmployeeCrudService employeeService;
 	
 	@PostMapping("/employees")
-	public void save(@RequestBody Employee employee)
+	public ResponseEntity<String> save(@RequestBody Employee employee)
 	{
 		System.out.println("EmployeeCrudController.save() invoked!!");
 		System.out.println("Received Employee : "+employee);
 		
 		if(employeeService.saveEmployee(employee))
 		{
-			System.out.println("Employee saved successfully!!");
+			return new ResponseEntity<String>("Employee saved successfully!!", HttpStatus.CREATED);
 		} else {
-			System.out.println("Employee not saved successfully!!");
+			return new ResponseEntity<String>("Failed to save employee!!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 	}
 	
 	@GetMapping(value="/employees/{id}",produces = "application/json")
-	public Employee getEmployeeById(@PathVariable int id) {
+	public ResponseEntity<Employee> getEmployeeById(@PathVariable int id, @RequestHeader HttpHeaders requestHeaders) {
 		System.out.println("EmployeeCrudController.getEmployeeById() invoked!!");
+		System.out.println("Received Request Headers : "+requestHeaders);
 		System.out.println("Received Employee Id : "+id);
-		return employeeService.getEmployeeById(id);
+		
+		String company = requestHeaders.getFirst("company");
+		System.out.println("Company : "+company);
+		if (company.equals("prowings")) {
+			System.out.println("--------Company is prowings!!----------");
+		}
+		Employee fetchedeEmp = employeeService.getEmployeeById(id);
+		
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("message", "hiii");
+		responseHeaders.add("name", fetchedeEmp.getName());
+		
+		ResponseEntity<Employee> rs = new ResponseEntity<Employee>(fetchedeEmp, responseHeaders, HttpStatus.CREATED);
+		
+		return rs;
 	}
 
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeEx(RuntimeException ex) {
+    	
+    	Error2 e1 = new Error2("Internal Server Error", ex.getMessage(), 500);
+    	
+    	Error1 err = new Error1();
+    	err.setErrors(Arrays.asList(e1));
+    	err.setCode(5000000);
+    	err.setMessage("Internal Server Errorrrrrrrrrrrrrrrrrr");
+    	
+    	ErrorResponse errorResponse = new ErrorResponse();
+    	errorResponse.setError(err);
+    	
+    	return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+	
 }

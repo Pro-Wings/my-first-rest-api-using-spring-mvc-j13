@@ -17,6 +17,8 @@ public class EmployeeCrudServiceImpl implements EmployeeCrudService {
 	@Override
 	public Employee getEmployeeById(int id) {
 		System.out.println("EmployeeCrudServiceImpl.getEmployeeById() invoked!!");
+		if(10==10)
+			throw new RuntimeException("Exception occured while fetching employee!!");
 		return employeeDao.getEmployeeById(id);
 	}
 
