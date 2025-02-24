@@ -69,20 +69,11 @@ public class EmployeeCrudController {
 	}
 
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeEx(RuntimeException ex) {
-    	
-    	Error2 e1 = new Error2("Internal Server Error", ex.getMessage(), 500);
-    	
-    	Error1 err = new Error1();
-    	err.setErrors(Arrays.asList(e1));
-    	err.setCode(5000000);
-    	err.setMessage("Internal Server Errorrrrrrrrrrrrrrrrrr");
-    	
-    	ErrorResponse errorResponse = new ErrorResponse();
-    	errorResponse.setError(err);
-    	
-    	return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<Error2> handleRuntimeEx(RuntimeException ex) {
+//    	
+//    	Error2 e1 = new Error2("Some error at Server!!", ex.getMessage(), 2394);    	
+//    	return new ResponseEntity<Error2>(e1, HttpStatus.BAD_REQUEST);
+//    }
 	
 }

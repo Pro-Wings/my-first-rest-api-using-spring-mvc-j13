@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.prowings.dao.EmployeeDao;
 import com.prowings.entity.Employee;
+import com.prowings.exception.InvalidNameException;
 
 @Service
 public class EmployeeCrudServiceImpl implements EmployeeCrudService {
@@ -31,7 +32,20 @@ public class EmployeeCrudServiceImpl implements EmployeeCrudService {
 	@Override
 	public boolean saveEmployee(Employee employee) {
 		System.out.println("EmployeeCrudServiceImpl.saveEmployee() invoked!!");
-		return employeeDao.saveEmployee(employee);
+		boolean result = false;
+		//validate employee
+		if(null!= employee)
+		{
+			String name = employee.getName();
+			if (null != name && name.length() > 3) {
+				System.out.println("Employee name is valid!!");
+				result = employeeDao.saveEmployee(employee);
+			} else {
+				throw new InvalidNameException("Employee name is invalid!!");
+			}
+		}
+		return result;
+		
 	}
 
 	@Override

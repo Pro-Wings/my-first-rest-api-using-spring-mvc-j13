@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.prowings.entity.Address;
 import com.prowings.entity.Student;
+import com.prowings.exception.InvalidNameException;
 
 //@Controller
 //@ResponseBody
@@ -61,6 +62,8 @@ public class StudentController {
 	{
 		System.out.println("StudentController.getStudentById() invoked.!!");
 		System.out.println(">>> Received id from request : "+id);
+		if(10==10)
+			throw new RuntimeException("Invalid Student Id!!");
 		return null;
 	}
 
