@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.logging.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,18 +25,21 @@ import com.prowings.entity.Error2;
 import com.prowings.entity.ErrorResponse;
 import com.prowings.service.EmployeeCrudService;
 
+import lombok.extern.log4j.Log4j2;
+
 @RestController
 @RequestMapping("/prowings")
+@Log4j2
 public class EmployeeCrudController {
-	
+
 	@Autowired
 	private EmployeeCrudService employeeService;
 	
 	@PostMapping("/employees")
 	public ResponseEntity<String> save(@RequestBody Employee employee)
 	{
-		System.out.println("EmployeeCrudController.save() invoked!!");
-		System.out.println("Received Employee : "+employee);
+		log.info("EmployeeCrudController.save() invoked!!");
+		log.info("Received Employee : "+employee);
 		
 		if(employeeService.saveEmployee(employee))
 		{
@@ -48,14 +52,16 @@ public class EmployeeCrudController {
 	
 	@GetMapping(value="/employees/{id}",produces = "application/json")
 	public ResponseEntity<Employee> getEmployeeById(@PathVariable int id, @RequestHeader HttpHeaders requestHeaders) {
-		System.out.println("EmployeeCrudController.getEmployeeById() invoked!!");
-		System.out.println("Received Request Headers : "+requestHeaders);
-		System.out.println("Received Employee Id : "+id);
+
+		MDC.put("employeeId", id);
+		log.info("EmployeeCrudController.getEmployeeById() invoked!!");
+		log.info("Received Request Headers : "+requestHeaders);
+		log.info("Received Employee Id : "+id);
 		
 		String company = requestHeaders.getFirst("company");
-		System.out.println("Company : "+company);
+		log.info("Company : "+company);
 		if (company.equals("prowings")) {
-			System.out.println("--------Company is prowings!!----------");
+			log.info("--------Company is prowings!!----------");
 		}
 		Employee fetchedeEmp = employeeService.getEmployeeById(id);
 		
@@ -64,7 +70,7 @@ public class EmployeeCrudController {
 		responseHeaders.add("name", fetchedeEmp.getName());
 		
 		ResponseEntity<Employee> rs = new ResponseEntity<Employee>(fetchedeEmp, responseHeaders, HttpStatus.CREATED);
-		
+		MDC.clear();
 		return rs;
 	}
 

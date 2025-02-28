@@ -10,7 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import com.prowings.entity.Employee;
 
+import lombok.extern.log4j.Log4j2;
+
 @Repository
+@Log4j2
 public class EmployeeDaoImpl implements EmployeeDao {
 
 	@Autowired
@@ -18,7 +21,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 	@Override
 	public Employee getEmployeeById(int id) {
-		System.out.println("EmployeeDaoImpl.getEmployeeById() invoked!!");
+		log.info("EmployeeDaoImpl.getEmployeeById() invoked!!");
 		Employee fetchedEmployee = null;
 		try {
 			Session session = sessionFactory.openSession();
@@ -26,26 +29,26 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			session.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Exception occured while fetching employee!!");
+			log.error("Exception occured while fetching employee!!");
 		}
 		if (fetchedEmployee != null) {
-			System.out.println("Employee fetched successfully!!");
+			log.info("Employee fetched successfully!!");
 		} else {
-			System.out.println("Employee not fetched successfully!!");
+			log.info("Employee not fetched successfully!!");
 		}
 		return fetchedEmployee;
 	}
 
 	@Override
 	public List<Employee> getAllEmployees() {
-		System.out.println("EmployeeDaoImpl.getAllEmployees() invoked!!");
+		log.info("EmployeeDaoImpl.getAllEmployees() invoked!!");
 		return null;
 	}
 
 	@Override
 	public boolean saveEmployee(Employee employee) {
 		boolean result = false;
-		System.out.println("EmployeeDaoImpl.saveEmployee() invoked!!");
+		log.info("EmployeeDaoImpl.saveEmployee() invoked!!");
 		try {
 			Session session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
@@ -53,10 +56,10 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			tx.commit();
 			session.close();
 			result = true;
-			System.out.println("Employee saved successfully!!");
+			log.info("Employee saved successfully!!");
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Exception occured while saving employee!!");
+			log.error("Exception occured while saving employee!!");
 		}
 		return result;
 	}
